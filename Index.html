@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>True Sense — WAR Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --navy:    #0D1B3E;
+  --navy2:   #162248;
+  --navy3:   #1E2E58;
+  --gold:    #B8922A;
+  --gold2:   #C9A84C;
+  --beige:   #FAF6EE;
+  --beige2:  #F0E8D4;
+  --beige3:  #E2D4B8;
+  --white:   #FFFFFF;
+  --ink:     #0D1B3E;
+  --ink2:    #162248;
+  --ink3:    #2A3E70;
+  --muted:   #5A6A90;
+  --green:   #1E7A46;
+  --gbg:     #EAF5EE;
+  --gbdr:    #8ACCA8;
+  --bbg:     #EEF3FB;
+  --bbdr:    #A8BCE8;
+  --goldbg:  #FDF8EC;
+  --goldbdr: #D4B85A;
+  --warnbg:  #FFFBEE;
+  --warnbdr: #E8D070;
+  --warntxt: #6A4E00;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--beige);color:var(--ink);font-family:'Montserrat',sans-serif;font-size:13px;}
+
+/* ── HERO ── */
+.hero{background:var(--beige);border-bottom:2px solid var(--beige3);padding:2rem 1.2rem 1.8rem;text-align:center;}
+.hero-eyebrow{font-size:9px;letter-spacing:4px;color:var(--ink2);text-transform:uppercase;font-weight:700;margin-bottom:.65rem;}
+.hero-name{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,8vw,3.2rem);font-weight:700;color:var(--navy);letter-spacing:2px;line-height:1.1;}
+.hero-sub{font-size:9px;letter-spacing:5px;color:var(--gold);text-transform:uppercase;font-weight:700;margin-top:.4rem;}
+.gold-rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold2),transparent);margin:1.3rem auto;max-width:280px;opacity:.5;}
+
+.war-badge{display:inline-flex;flex-direction:column;align-items:center;margin:.2rem auto 0;background:var(--gbg);border:1.5px solid var(--gbdr);border-radius:10px;padding:1.1rem 2.5rem;gap:.2rem;}
+.war-badge-label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:var(--green);font-weight:700;}
+.war-badge-value{font-family:'Cormorant Garamond',serif;font-size:clamp(2.4rem,8vw,3.2rem);font-weight:700;color:var(--green);line-height:1.1;}
+.war-badge-sub{font-size:8px;color:#5AAA78;letter-spacing:1.5px;font-weight:500;text-align:center;}
+
+.war-note{max-width:340px;margin:.7rem auto 0;font-size:9px;line-height:1.6;color:var(--muted);font-weight:500;font-style:italic;}
+.hero-tagline{margin-top:1.2rem;font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--ink3);font-style:italic;line-height:1.6;padding:0 .5rem;}
+
+/* ── DISC STRIP ── */
+.disc-strip{background:var(--warnbg);border-top:1px solid var(--warnbdr);border-bottom:1px solid var(--warnbdr);padding:.6rem 1.2rem;text-align:center;font-size:9px;color:var(--warntxt);line-height:1.7;font-weight:600;}
+
+/* ── MAIN ── */
+.main{max-width:600px;margin:0 auto;padding:1.5rem 1rem 3rem;}
+
+/* ── SECTION HDR ── */
+.sec-hdr{background:var(--navy);color:var(--gold2);text-align:center;padding:.65rem 1rem;font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;border-radius:8px 8px 0 0;}
+
+/* ── ASSET CARDS (mobile-first) ── */
+.assets-wrap{background:var(--white);border:1.5px solid var(--beige3);border-top:none;border-radius:0 0 10px 10px;overflow:hidden;box-shadow:0 4px 20px rgba(13,27,62,0.09);}
+
+.asset-card{border-bottom:1px solid var(--beige2);padding:.85rem 1rem;}
+.asset-card:nth-child(odd){background:#FAFAF6;}
+.asset-card:nth-child(even){background:var(--white);}
+.asset-card:last-child{border-bottom:none;}
+
+/* top row: name + input */
+.ac-top{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.5rem;}
+.ac-name{font-size:12.5px;font-weight:700;color:var(--ink);flex:1;line-height:1.3;}
+.ac-input-wrap{display:flex;align-items:center;gap:.3rem;flex-shrink:0;}
+.ac-rupee{font-size:12px;color:var(--muted);font-weight:700;}
+.ac-input{
+  width:100px;
+  background:var(--bbg);
+  border:1.5px solid var(--bbdr);
+  border-radius:6px;
+  padding:.32rem .5rem;
+  color:var(--navy);
+  font-family:'Montserrat',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  text-align:right;
+  outline:none;
+  -webkit-appearance:none;
+}
+.ac-input:focus{border-color:var(--navy);background:var(--white);box-shadow:0 0 0 2px rgba(13,27,62,0.10);}
+.ac-input::placeholder{color:#C0B8A0;font-weight:400;}
+
+/* bottom row: stats chips */
+.ac-stats{display:flex;flex-wrap:wrap;gap:.35rem;}
+.chip{display:inline-flex;flex-direction:column;align-items:center;background:var(--beige);border:1px solid var(--beige3);border-radius:5px;padding:.22rem .5rem;min-width:52px;}
+.chip-lbl{font-size:7.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:.05rem;}
+.chip-val{font-size:11px;font-weight:700;color:var(--ink3);}
+.chip.war-chip{background:var(--gbg);border-color:var(--gbdr);}
+.chip.war-chip .chip-lbl{color:var(--green);}
+.chip.war-chip .chip-val{color:var(--green);}
+.chip.wt-chip{background:var(--goldbg);border-color:var(--goldbdr);}
+.chip.wt-chip .chip-lbl{color:var(--gold);}
+.chip.wt-chip .chip-val{color:var(--gold);}
+
+/* ── TOTAL ROW ── */
+.total-row{background:var(--navy);padding:.8rem 1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;border-radius:0 0 10px 10px;}
+.tot-left{display:flex;flex-direction:column;gap:.15rem;}
+.tot-lbl{font-size:8.5px;letter-spacing:3px;text-transform:uppercase;color:var(--gold2);font-weight:700;}
+.tot-val{font-size:15px;font-weight:700;color:var(--gold2);}
+.tot-right{display:flex;flex-direction:column;align-items:flex-end;gap:.15rem;}
+.tot-war-lbl{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#A8B870;font-weight:600;}
+.tot-war-val{font-size:18px;font-weight:700;color:var(--gold2);font-family:'Cormorant Garamond',serif;}
+
+/* ── YOUR WAR CARDS ── */
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-top:1.25rem;}
+.res-card{border-radius:10px;padding:1.1rem 1rem;border:1.5px solid;}
+.res-card.you{background:var(--bbg);border-color:var(--bbdr);}
+.res-card.corpus{background:var(--goldbg);border-color:var(--goldbdr);}
+.rc-lbl{font-size:8px;letter-spacing:2.5px;text-transform:uppercase;font-weight:700;margin-bottom:.3rem;}
+.res-card.you .rc-lbl{color:var(--ink3);}
+.res-card.corpus .rc-lbl{color:var(--gold);}
+.rc-val{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;line-height:1.1;}
+.res-card.you .rc-val{color:var(--navy);}
+.res-card.corpus .rc-val{color:var(--gold);}
+.rc-note{font-size:8.5px;margin-top:.2rem;font-weight:600;}
+.res-card.you .rc-note{color:var(--muted);}
+.res-card.corpus .rc-note{color:#9A7820;}
+
+/* ── COMPARISON ── */
+.comp-inner{background:var(--white);border:1.5px solid var(--beige3);border-top:none;border-radius:0 0 10px 10px;padding:1rem;box-shadow:0 4px 20px rgba(13,27,62,0.08);}
+.comp-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;}
+.cmp-card{border-radius:8px;padding:.85rem .7rem;text-align:center;border:1.5px solid;}
+.cmp-lbl{font-size:8px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:.35rem;line-height:1.3;}
+.cmp-val{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;line-height:1;}
+.cmp-card.vg{background:var(--gbg);border-color:var(--gbdr);}
+.cmp-card.vg .cmp-lbl{color:var(--green);}
+.cmp-card.vg .cmp-val{color:var(--green);}
+.cmp-card.you{background:var(--bbg);border-color:var(--bbdr);}
+.cmp-card.you .cmp-lbl{color:var(--ink3);}
+.cmp-card.you .cmp-val{color:var(--navy);}
+.cmp-card.diff{background:var(--goldbg);border-color:var(--goldbdr);}
+.cmp-card.diff .cmp-lbl{color:var(--gold);}
+.cmp-card.diff .cmp-val{font-size:1.5rem;color:var(--ink);}
+.verdict{margin-top:.85rem;background:var(--warnbg);border:1px solid var(--warnbdr);border-radius:7px;padding:.8rem 1rem;font-size:12.5px;color:var(--ink2);font-family:'Cormorant Garamond',serif;font-style:italic;text-align:center;line-height:1.7;font-weight:500;}
+
+/* ── CONTACT ── */
+.contact-inner{background:var(--navy);border:1.5px solid var(--navy3);border-top:none;border-radius:0 0 10px 10px;padding:1.3rem 1.4rem;box-shadow:0 4px 20px rgba(13,27,62,0.12);}
+.c-row{display:flex;align-items:baseline;gap:1rem;margin-bottom:.65rem;}
+.c-key{font-size:8.5px;letter-spacing:3px;text-transform:uppercase;color:var(--gold2);min-width:62px;font-weight:700;}
+.c-val{font-size:14px;color:var(--white);font-weight:600;}
+.c-divider{height:1px;background:#2A3A6A;margin:.35rem 0 .8rem;}
+.c-quote{font-family:'Cormorant Garamond',serif;font-size:14px;color:#A8B8D8;font-style:italic;line-height:1.7;}
+
+/* ── DISCLAIMER BOX ── */
+.disclaimer-box{margin-top:1.25rem;background:var(--warnbg);border:1.5px solid var(--warnbdr);border-radius:10px;padding:1.3rem 1.4rem;}
+.disc-title{font-size:8.5px;letter-spacing:4px;text-transform:uppercase;color:var(--warntxt);font-weight:700;margin-bottom:.7rem;padding-bottom:.45rem;border-bottom:1px solid var(--warnbdr);}
+.disc-text{font-size:10.5px;color:#4A3800;line-height:1.9;font-weight:500;}
+.disc-text strong{font-weight:700;color:#3A2800;}
+.disc-text em{font-style:italic;color:#5A4600;}
+
+.footer{text-align:center;padding:1.5rem 1rem .5rem;font-size:8.5px;color:var(--muted);letter-spacing:1px;font-weight:500;}
+
+/* ── DESKTOP: switch back to table layout for wide screens ── */
+@media(min-width:700px){
+  .assets-wrap{overflow-x:auto;}
+  .asset-card{padding:0;border-bottom:none;}
+  .ac-top{display:none;}
+  .ac-stats{display:none;}
+
+  /* show desktop table instead */
+  .desktop-table{display:table!important;}
+  .asset-card{display:none!important;}
+  .total-row-mobile{display:none!important;}
+
+  .result-grid{grid-template-columns:1fr 1fr;}
+  .comp-grid{grid-template-columns:1fr 1fr 1fr;}
+  .cmp-val{font-size:2rem;}
+}
+
+/* hide desktop table on mobile */
+.desktop-table{display:none;}
+.desktop-totals{display:none;}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-eyebrow">True Sense &nbsp;&nbsp; Multi Asset Investment</p>
+  <h1 class="hero-name">Vishesh Gandhi</h1>
+  <p class="hero-sub">Skin in the Game</p>
+  <div class="gold-rule"></div>
+  <div class="war-badge">
+    <span class="war-badge-label">My Personal Portfolio WAR</span>
+    <span class="war-badge-value">20.98%*</span>
+    <span class="war-badge-sub">Weighted Average Return</span>
+  </div>
+  <p class="war-note">*This is the actual return on Vishesh Gandhi's own existing personal portfolio. It is not a guaranteed, assured or projected return for any investor. Past performance is not indicative of future returns.</p>
+  <p class="hero-tagline">The world is changing. Is your portfolio keeping up?</p>
+</div>
+
+<div class="disc-strip">
+  Personal tracking tool only &nbsp;·&nbsp; Not investment advice under SEBI (IA) Regulations, 2013 &nbsp;·&nbsp; Your data is never saved or shared
+</div>
+
+<div class="main">
+
+  <!-- ASSET SECTION -->
+  <div class="sec-hdr">Your Current Asset Allocation — Enter Amount (₹)</div>
+  <div class="assets-wrap">
+
+    <!-- DESKTOP TABLE (hidden on mobile) -->
+    <table class="desktop-table" style="width:100%;border-collapse:collapse;">
+      <thead>
+        <tr style="background:#162248;border-bottom:2px solid #C9A84C;">
+          <th style="padding:.5rem .8rem;font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:#C9A84C;font-weight:700;text-align:left;">Asset Class</th>
+          <th style="padding:.5rem .8rem;font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:#C9A84C;font-weight:700;text-align:right;">Amount (₹)</th>
+          <th style="padding:.5rem .8rem;font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:#C9A84C;font-weight:700;text-align:center;">% Weight</th>
+          <th style="padding:.5rem .8rem;font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:#C9A84C;font-weight:700;text-align:center;">Exp. Return</th>
+          <th style="padding:.5rem .8rem;font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:#C9A84C;font-weight:700;text-align:center;">Tax</th>
+          <th style="padding:.5rem .8rem;font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:#C9A84C;font-weight:700;text-align:center;">Net Return</th>
+          <th style="padding:.5rem .8rem;font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:#C9A84C;font-weight:700;text-align:center;">WAR Contrib.</th>
+        </tr>
+      </thead>
+      <tbody id="desktop-tbody"></tbody>
+      <tfoot>
+        <tr style="background:#0D1B3E;border-top:2px solid #C9A84C;">
+          <td style="padding:.6rem .8rem;font-size:10px;font-weight:700;color:#C9A84C;letter-spacing:1px;">TOTAL INVESTED</td>
+          <td style="padding:.6rem .8rem;font-size:12px;font-weight:700;color:#C9A84C;text-align:right;" id="dt-total">₹ 0</td>
+          <td style="padding:.6rem .8rem;font-size:11px;font-weight:700;color:#C9A84C;text-align:center;" id="dt-pct">—</td>
+          <td colspan="3"></td>
+          <td style="padding:.6rem .8rem;font-size:13px;font-weight:700;color:#C9A84C;text-align:center;background:rgba(201,168,76,0.15);" id="dt-war">0.00%</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <!-- MOBILE CARDS (shown on mobile) -->
+    <div id="mobile-cards"></div>
+
+    <!-- MOBILE TOTAL ROW -->
+    <div class="total-row total-row-mobile" id="mobile-total-row">
+      <div class="tot-left">
+        <span class="tot-lbl">Total Invested</span>
+        <span class="tot-val" id="mob-total">₹ 0</span>
+      </div>
+      <div class="tot-right">
+        <span class="tot-war-lbl">Your WAR</span>
+        <span class="tot-war-val" id="mob-war">0.00%</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- YOUR WAR RESULT -->
+  <div class="result-grid">
+    <div class="res-card you">
+      <div class="rc-lbl">Your WAR · Net of Tax</div>
+      <div class="rc-val" id="your-war-val">0.00%</div>
+      <div class="rc-note">Weighted Average Return</div>
+    </div>
+    <div class="res-card corpus">
+      <div class="rc-lbl">Total Portfolio Value</div>
+      <div class="rc-val" id="total-invested-display">₹ 0</div>
+      <div class="rc-note">Sum of all inputs</div>
+    </div>
+  </div>
+
+  <!-- COMPARISON -->
+  <div style="margin-top:1.25rem;">
+    <div class="sec-hdr">Your WAR vs Vishesh Gandhi's WAR</div>
+    <div class="comp-inner">
+      <div class="comp-grid">
+        <div class="cmp-card vg">
+          <div class="cmp-lbl">Vishesh Gandhi</div>
+          <div class="cmp-val">20.98%</div>
+        </div>
+        <div class="cmp-card you">
+          <div class="cmp-lbl">Your WAR</div>
+          <div class="cmp-val" id="comp-you">0.00%</div>
+        </div>
+        <div class="cmp-card diff">
+          <div class="cmp-lbl">Gap</div>
+          <div class="cmp-val" id="comp-diff">—</div>
+        </div>
+      </div>
+      <div class="verdict" id="verdict">"One of the greatest values of mentors is the ability to see ahead what others cannot see and to help them navigate a course to their destination." — John C. Maxwell</div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div style="margin-top:1.25rem;">
+    <div class="sec-hdr">Curious About Improving Your WAR? Get in Touch.</div>
+    <div class="contact-inner">
+      <div class="c-row"><span class="c-key">Name</span><span class="c-val">Vishesh Gandhi</span></div>
+      <div class="c-row"><span class="c-key">Contact</span><span class="c-val">+91 98206 14955</span></div>
+      <div class="c-divider"></div>
+      <p class="c-quote">"My portfolio weighted average return over 10 years of personal practice is 20.98%. Check yours — then come back to me."</p>
+    </div>
+  </div>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer-box">
+    <div class="disc-title">Important Disclaimer</div>
+    <div class="disc-text">
+      This calculator is Vishesh Gandhi's personal portfolio tracking tool. Its outputs are for <strong>informational and educational purposes only</strong> and should not be construed as investment advice, recommendation, or solicitation to buy or sell any securities or financial products.<br><br>
+      The results are based on user-provided inputs and certain pre-set assumptions regarding expected returns and applicable tax rates. These assumptions may not reflect actual market conditions, individual tax liabilities, or future performance. <strong>Past performance is not indicative of future returns.</strong><br><br>
+      Users are strongly advised to evaluate their own financial situation, risk appetite, and investment objectives, and to consult a <strong>SEBI-registered Investment Adviser (RIA)</strong> before making any investment decisions. This tool does not create any advisory relationship between the user and Vishesh Gandhi.<br><br>
+      <em>This tool is neither registered with nor endorsed by the Securities and Exchange Board of India (SEBI). It is governed under SEBI (Investment Advisers) Regulations, 2013. No investment advisory services are being rendered through this platform.</em>
+    </div>
+  </div>
+
+  <div class="footer">© Vishesh Gandhi &nbsp;·&nbsp; True Sense Multi Asset Investment &nbsp;·&nbsp; For personal reference only</div>
+</div>
+
+<script>
+const VISHESH_WAR = 20.98;
+const assets = [
+  {name:"Cash/Savings Banks",                    exp:4.00,  tax:30.00},
+  {name:"Fixed Income (FD/Bonds)",               exp:7.50,  tax:30.00},
+  {name:"PF/PPF/EPF",                            exp:7.15,  tax:0.00},
+  {name:"LIC Policies",                          exp:5.00,  tax:0.00},
+  {name:"ULIPs",                                 exp:12.00, tax:0.00},
+  {name:"Precious Metals",                       exp:8.00,  tax:12.50},
+  {name:"Real Estate (Not Self Residing House)", exp:8.00,  tax:12.50},
+  {name:"Mutual Fund (Hybrid)",                  exp:12.00, tax:12.50},
+  {name:"Mutual Fund (Equities)",                exp:12.00, tax:12.50},
+  {name:"PMS",                                   exp:18.00, tax:12.50},
+  {name:"AIF",                                   exp:18.00, tax:12.50},
+  {name:"SIFs",                                  exp:12.00, tax:0.00},
+  {name:"Direct Stocks",                         exp:12.00, tax:12.50},
+  {name:"Global Stocks Portfolio",               exp:12.00, tax:0.00},
+  {name:"Unlisted/Start UPs",                    exp:25.00, tax:0.00},
+  {name:"Crypto Currencies",                     exp:25.00, tax:0.00},
+  {name:"Unconventional Assets",                 exp:12.00, tax:0.00},
+  {name:"Others",                                exp:12.00, tax:0.00},
+];
+
+// Build mobile cards
+const mobileContainer = document.getElementById('mobile-cards');
+assets.forEach((a,i)=>{
+  const netRet = (a.exp*(1-a.tax/100)).toFixed(2);
+  const card = document.createElement('div');
+  card.className = 'asset-card';
+  card.innerHTML = `
+    <div class="ac-top">
+      <span class="ac-name">${a.name}</span>
+      <div class="ac-input-wrap">
+        <span class="ac-rupee">₹</span>
+        <input class="ac-input" type="number" inputmode="numeric" min="0" placeholder="0" data-index="${i}" />
+      </div>
+    </div>
+    <div class="ac-stats">
+      <div class="chip wt-chip"><span class="chip-lbl">Weight</span><span class="chip-val" id="mob-w${i}">0%</span></div>
+      <div class="chip"><span class="chip-lbl">Exp. Ret</span><span class="chip-val">${a.exp}%</span></div>
+      <div class="chip"><span class="chip-lbl">Tax</span><span class="chip-val">${a.tax}%</span></div>
+      <div class="chip"><span class="chip-lbl">Net Ret</span><span class="chip-val">${netRet}%</span></div>
+      <div class="chip war-chip"><span class="chip-lbl">WAR</span><span class="chip-val" id="mob-war${i}">0.00%</span></div>
+    </div>
+  `;
+  mobileContainer.appendChild(card);
+});
+
+// Build desktop table rows
+const tbody = document.getElementById('desktop-tbody');
+assets.forEach((a,i)=>{
+  const netRet = (a.exp*(1-a.tax/100)).toFixed(2);
+  const odd = i%2===0;
+  const tr = document.createElement('tr');
+  tr.style.background = odd ? '#FAFAF6' : '#FFFFFF';
+  tr.innerHTML = `
+    <td style="padding:.4rem .8rem;font-size:12px;font-weight:600;color:#0D1B3E;border-bottom:1px solid #EEE8D8;">${a.name}</td>
+    <td style="padding:.4rem .8rem;border-bottom:1px solid #EEE8D8;">
+      <div style="position:relative;">
+        <span style="position:absolute;left:7px;top:50%;transform:translateY(-50%);font-size:11px;color:#5A6A90;font-weight:700;">₹</span>
+        <input class="ac-input" type="number" min="0" placeholder="0" data-index="${i}"
+          style="width:110px;padding:.28rem .4rem .28rem 18px;font-size:12px;text-align:right;background:#EEF3FB;border:1.5px solid #A8BCE8;border-radius:5px;color:#0D1B3E;font-weight:700;outline:none;font-family:Montserrat,sans-serif;" />
+      </div>
+    </td>
+    <td style="padding:.4rem .8rem;font-size:11px;color:#6A6250;text-align:center;border-bottom:1px solid #EEE8D8;font-weight:600;" id="dsk-w${i}">0.00%</td>
+    <td style="padding:.4rem .8rem;font-size:11px;color:#6A6250;text-align:center;border-bottom:1px solid #EEE8D8;font-weight:600;">${a.exp.toFixed(2)}%</td>
+    <td style="padding:.4rem .8rem;font-size:11px;color:#6A6250;text-align:center;border-bottom:1px solid #EEE8D8;font-weight:600;">${a.tax.toFixed(2)}%</td>
+    <td style="padding:.4rem .8rem;font-size:11px;color:#6A6250;text-align:center;border-bottom:1px solid #EEE8D8;font-weight:600;">${netRet}%</td>
+    <td style="padding:.4rem .8rem;font-size:11px;color:#1E7A46;text-align:center;border-bottom:1px solid #EEE8D8;font-weight:700;background:#EAF5EE;" id="dsk-war${i}">0.00%</td>
+  `;
+  tbody.appendChild(tr);
+});
+
+function fmt(n){
+  if(n>=10000000) return '₹'+(n/10000000).toFixed(2)+' Cr';
+  if(n>=100000)   return '₹'+(n/100000).toFixed(2)+' L';
+  if(n>0)         return '₹'+Math.round(n).toLocaleString('en-IN');
+  return '₹ 0';
+}
+
+function calc(){
+  // collect all inputs (both mobile and desktop share data-index)
+  const inputs = document.querySelectorAll('[data-index]');
+  const vals = new Array(assets.length).fill(0);
+  inputs.forEach(inp=>{
+    const i = parseInt(inp.dataset.index);
+    const v = parseFloat(inp.value)||0;
+    if(v>0) vals[i] = v;
+  });
+
+  const total = vals.reduce((s,v)=>s+v,0);
+  let war = 0;
+  vals.forEach((v,i)=>{
+    const wt = total>0 ? v/total : 0;
+    const contrib = wt * assets[i].exp * (1-assets[i].tax/100);
+    war += contrib;
+    const wStr = (wt*100).toFixed(1)+'%';
+    const cStr = contrib.toFixed(2)+'%';
+    if(document.getElementById(`mob-w${i}`))   document.getElementById(`mob-w${i}`).textContent  = wStr;
+    if(document.getElementById(`mob-war${i}`)) document.getElementById(`mob-war${i}`).textContent = cStr;
+    if(document.getElementById(`dsk-w${i}`))   document.getElementById(`dsk-w${i}`).textContent   = (wt*100).toFixed(2)+'%';
+    if(document.getElementById(`dsk-war${i}`)) document.getElementById(`dsk-war${i}`).textContent = cStr;
+  });
+
+  const tf = fmt(total);
+  const wStr = war.toFixed(2)+'%';
+
+  // mobile total
+  if(document.getElementById('mob-total')) document.getElementById('mob-total').textContent = tf;
+  if(document.getElementById('mob-war'))   document.getElementById('mob-war').textContent   = wStr;
+  // desktop total
+  if(document.getElementById('dt-total')) document.getElementById('dt-total').textContent = tf;
+  if(document.getElementById('dt-pct'))   document.getElementById('dt-pct').textContent   = total>0?'100.00%':'—';
+  if(document.getElementById('dt-war'))   document.getElementById('dt-war').textContent   = wStr;
+  // result cards
+  document.getElementById('your-war-val').textContent           = wStr;
+  document.getElementById('total-invested-display').textContent = tf;
+  document.getElementById('comp-you').textContent               = wStr;
+
+  const diffEl    = document.getElementById('comp-diff');
+  const verdictEl = document.getElementById('verdict');
+  if(total===0){
+    diffEl.textContent='—'; diffEl.style.color='var(--ink3)';
+    verdictEl.textContent='Enter your portfolio values above to see your personalised comparison.';
+    return;
+  }
+  const diff = parseFloat((war-VISHESH_WAR).toFixed(2));
+  if(diff>0){
+    diffEl.textContent='+'+diff.toFixed(2)+'%'; diffEl.style.color='var(--green)';
+    verdictEl.textContent=`Your portfolio is generating ${diff.toFixed(2)}% more than Vishesh's WAR of ${VISHESH_WAR}% — that's exceptional. Even high performers find hidden alpha when they look across all asset classes. Worth a conversation.`;
+  } else if(diff===0){
+    diffEl.textContent='0.00%'; diffEl.style.color='var(--gold2)';
+    verdictEl.textContent=`Your WAR exactly matches Vishesh's ${VISHESH_WAR}%. That's rare — let's talk about how to sustain and push it even further.`;
+  } else {
+    diffEl.textContent=diff.toFixed(2)+'%'; diffEl.style.color='#B03020';
+    const corpus = total>=100000?(total/100000).toFixed(1)+'L':Math.round(total).toLocaleString('en-IN');
+    verdictEl.textContent=`Your WAR is ${Math.abs(diff).toFixed(2)}% below Vishesh's personal return of ${VISHESH_WAR}%. On ₹${corpus}, that gap compounded over 10 years is not a small number — it is the difference between a good portfolio and a great one. Call Vishesh at +91 98206 14955.`;
+  }
+}
+
+document.addEventListener('input',e=>{
+  if(e.target.classList.contains('ac-input')){
+    // sync both mobile & desktop inputs for same index
+    const i = e.target.dataset.index;
+    const v = e.target.value;
+    document.querySelectorAll(`[data-index="${i}"]`).forEach(inp=>{ if(inp!==e.target) inp.value=v; });
+    calc();
+  }
+});
+</script>
+</body>
+</html>
